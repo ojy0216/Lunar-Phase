@@ -14,7 +14,7 @@ SYNODIC_MONTH = 29.53
 def draw_moon(lunar_date, date):
     plt.style.use('dark_background')
 
-    plt.figure(figsize=(5, 5))
+    plt.figure('Lunar Phase', figsize=(5, 5))
     plt.xlim(-1, 1)
     plt.ylim(-1, 1)
 
@@ -108,7 +108,8 @@ def main(verbose=False):
     request = urllib.request.Request(url + query_params)
     request.get_method = lambda: 'GET'
     response_body = urllib.request.urlopen(request).read()
-
+    if verbose:
+        print(response_body)
     root_element = ElementTree.fromstring(response_body)
 
     iter_element = root_element.iter(tag='item')
@@ -127,6 +128,12 @@ def main(verbose=False):
         draw_moon(float(lunage), date)
     except NameError:
         gui.error()
+        root.destroy()
+        return
+    except AttributeError:
+        gui.error()
+        root.destroy()
+        return
 
 
 if __name__ == '__main__':
