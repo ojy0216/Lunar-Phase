@@ -5,5 +5,5 @@
 * Rise, Transit, Set time Info: [출몰시각 정보](https://www.data.go.kr/tcs/dss/selectApiDataDetailView.do?publicDataPk=15012688)
 
 ## Result example
-<img src="https://user-images.githubusercontent.com/47859342/98758066-378d8e80-2411-11eb-81a9-a572e20706db.png" width="50%">
+<img src="https://user-images.githubusercontent.com/47859342/98758066-378d8e80-2411-11eb-81a9-a572e20706db.png" width="80%">
 
