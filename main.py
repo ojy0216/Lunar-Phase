@@ -11,7 +11,7 @@ import math
 SYNODIC_MONTH = 29.53
 
 
-def draw_moon(lunar_date, date):
+def draw_moon(lunar_date, date, time):
     plt.style.use('dark_background')
 
     plt.figure('Lunar Phase', figsize=(5, 5))
@@ -76,17 +76,20 @@ def draw_moon(lunar_date, date):
     plt.tick_params(axis='x', which='both', bottom=False, top=False, labelbottom=False)
     plt.tick_params(axis='y', which='both', left=False, top=False, labelleft=False)
 
-    plt.xlabel('\n{} / {} / {}\nLunar Age: {}'.format(
+    plt.xlabel('\n{} / {} / {}\nLunar Age : {}\nRise: {} | Transit: {} | Set: {} (@ Seoul, S. Korea)'.format(
         date['year'],
         date['month'],
         date['day'],
-        lunar_date
+        lunar_date,
+        time['rise'],
+        time['transit'],
+        time['set']
     ))
     plt.tight_layout()
     plt.show()
 
 
-def main(verbose=False):
+def main(verbose=False, visual=True):
     root = Tk()
     g = gui.Gui(root)
     date = g.check_date()
@@ -96,21 +99,24 @@ def main(verbose=False):
     if not date:
         return
 
-    my_key = api_key.my_key
-    url = 'http://apis.data.go.kr/B090041/openapi/service/LunPhInfoService/getLunPhInfo'
-    query_params = '?' + urlencode({
-        quote_plus('ServiceKey'): my_key,
+    concat_date = date['year'] + date['month'] + date['day']
+
+    """Get Lunar Phase w/ API"""
+    lunar_phase_key = api_key.lunar_phase_key
+    phase_url = 'http://apis.data.go.kr/B090041/openapi/service/LunPhInfoService/getLunPhInfo'
+    phase_query_params = '?' + urlencode({
+        quote_plus('ServiceKey'): lunar_phase_key,
         quote_plus('solYear'): date['year'],
         quote_plus('solMonth'): date['month'],
         quote_plus('solDay'): date['day']
     })
 
-    request = urllib.request.Request(url + query_params)
+    request = urllib.request.Request(phase_url + phase_query_params)
     request.get_method = lambda: 'GET'
-    response_body = urllib.request.urlopen(request).read()
+    phase_response_body = urllib.request.urlopen(request).read()
     if verbose:
-        print(response_body)
-    root_element = ElementTree.fromstring(response_body)
+        print(phase_response_body)
+    root_element = ElementTree.fromstring(phase_response_body)
 
     iter_element = root_element.iter(tag='item')
     lunage = None
@@ -122,18 +128,64 @@ def main(verbose=False):
             print(lunage)
         if not lunage:
             root.withdraw()
-            gui.error()
+            gui.phase_error()
             return
-        root.destroy()
-        draw_moon(float(lunage), date)
+        root.quit()
     except NameError:
-        gui.error()
+        gui.phase_error()
         root.destroy()
         return
     except AttributeError:
-        gui.error()
+        gui.phase_error()
         root.destroy()
         return
+
+    """Get Lunar Times w/ API"""
+    lunar_time_key = api_key.lunar_time_key
+    time_url = 'http://apis.data.go.kr/B090041/openapi/service/RiseSetInfoService/getAreaRiseSetInfo'
+    time_query_params = '?' + urlencode({
+        quote_plus('ServiceKey'): lunar_time_key,
+        quote_plus('locdate'): concat_date,
+        quote_plus('location'): '서울'
+    })
+
+    request = urllib.request.Request(time_url + time_query_params)
+    request.get_method = lambda: 'GET'
+    time_response_body = urllib.request.urlopen(request).read()
+    if verbose:
+        print(time_response_body)
+    root_element = ElementTree.fromstring(time_response_body)
+
+    iter_element = root_element.iter(tag='item')
+    moon_time = {}
+
+    try:
+        for element in iter_element:
+            moon_time['rise'] = element.find('moonrise').text[:4]
+            moon_time['transit'] = element.find('moontransit').text[:4]
+            moon_time['set'] = element.find('moonset').text[:4]
+        if not moon_time:
+            root.withdraw()
+            gui.time_error()
+            return
+        root.destroy()
+    except NameError:
+        gui.time_error()
+        root.destroy()
+        return
+    except AttributeError:
+        gui.time_error()
+        root.destroy()
+        return
+
+    for key, value in moon_time.items():
+        tmp = value
+        moon_time[key] = tmp[:2] + ':' + tmp[:-2]
+    if verbose:
+        print(moon_time)
+
+    if visual:
+        draw_moon(float(lunage), date, moon_time)
 
 
 if __name__ == '__main__':

@@ -4,9 +4,12 @@ from tkinter import messagebox
 import datetime
 
 
-def error():
+def phase_error():
     messagebox.showerror('Error', 'Failed to receive Lunar Phase info')
 
+
+def time_error():
+    messagebox.showerror('Error', 'Failed to receive Lunar Time info')
 
 class Gui:
     def __init__(self, window):
