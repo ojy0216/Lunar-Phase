@@ -19,7 +19,7 @@ class Gui:
         window_width = self.window.winfo_reqwidth()
         window_height = self.window.winfo_reqheight()
         win_pos_x = int(self.window.winfo_screenwidth() / 2 - window_width)
-        win_pos_y = int(self.window.winfo_screenheight() / 2.5 - window_height)
+        win_pos_y = int(self.window.winfo_screenheight() / 2 - window_height)
         self.window.geometry('+{}+{}'.format(win_pos_x, win_pos_y))
 
         self.month_options = [str(m) for m in range(1, 12 + 1)]

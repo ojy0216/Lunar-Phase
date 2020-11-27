@@ -14,9 +14,11 @@ SYNODIC_MONTH = 29.53
 def draw_moon(lunar_date, date, time):
     plt.style.use('dark_background')
 
-    plt.figure('Lunar Phase', figsize=(5, 5))
+    fig, ax = plt.subplots(figsize=(6, 6))
+    fig.canvas.set_window_title('Lunar Phase')
     plt.xlim(-1, 1)
     plt.ylim(-1, 1)
+    ax.set_aspect('equal')
 
     phase = lunar_date * math.pi / (SYNODIC_MONTH / 2)
     double_phase = 2 * phase
