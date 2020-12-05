@@ -113,10 +113,13 @@ def main(verbose=False, visual=True):
         quote_plus('solDay'): date['day']
     })
 
+    if verbose:
+        print("Requesting Lunar Phase API...")
     request = urllib.request.Request(phase_url + phase_query_params)
     request.get_method = lambda: 'GET'
     phase_response_body = urllib.request.urlopen(request).read()
     if verbose:
+        print("Lunar Phase API received")
         print(phase_response_body)
     root_element = ElementTree.fromstring(phase_response_body)
 
@@ -151,10 +154,13 @@ def main(verbose=False, visual=True):
         quote_plus('location'): '서울'
     })
 
+    if verbose:
+        print('Requesting Lunar Times API ..')
     request = urllib.request.Request(time_url + time_query_params)
     request.get_method = lambda: 'GET'
     time_response_body = urllib.request.urlopen(request).read()
     if verbose:
+        print('Lunar Times API received')
         print(time_response_body)
     root_element = ElementTree.fromstring(time_response_body)
 
@@ -191,4 +197,4 @@ def main(verbose=False, visual=True):
 
 
 if __name__ == '__main__':
-    main()
+    main(verbose=False)
