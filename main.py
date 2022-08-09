@@ -1,6 +1,6 @@
 from tkinter import *
 import gui
-import api_key
+from os import environ
 import urllib.request
 from urllib.parse import urlencode, quote_plus
 from xml.etree import ElementTree
@@ -15,7 +15,7 @@ def draw_moon(lunar_date, date, time):
     plt.style.use('dark_background')
 
     fig, ax = plt.subplots(figsize=(6, 6))
-    fig.canvas.set_window_title('Lunar Phase')
+    fig.canvas.manager.set_window_title('Lunar Phase')
     plt.xlim(-1, 1)
     plt.ylim(-1, 1)
     ax.set_aspect('equal')
@@ -104,7 +104,8 @@ def main(verbose=False, visual=True):
     concat_date = date['year'] + date['month'] + date['day']
 
     """Get Lunar Phase w/ API"""
-    lunar_phase_key = api_key.lunar_phase_key
+    # lunar_phase_key = api_key.lunar_phase_key
+    lunar_phase_key = environ['lunar_key']
     phase_url = 'http://apis.data.go.kr/B090041/openapi/service/LunPhInfoService/getLunPhInfo'
     phase_query_params = '?' + urlencode({
         quote_plus('ServiceKey'): lunar_phase_key,
@@ -146,7 +147,8 @@ def main(verbose=False, visual=True):
         return
 
     """Get Lunar Times w/ API"""
-    lunar_time_key = api_key.lunar_time_key
+    # lunar_time_key = api_key.lunar_time_key
+    lunar_time_key = environ['lunar_key']
     time_url = 'http://apis.data.go.kr/B090041/openapi/service/RiseSetInfoService/getAreaRiseSetInfo'
     time_query_params = '?' + urlencode({
         quote_plus('ServiceKey'): lunar_time_key,
